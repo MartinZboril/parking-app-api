@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Parking;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use App\Services\ParkingPriceService;
 use App\Http\Resources\ParkingResource;
@@ -13,6 +14,11 @@ use App\Http\Resources\ParkingResource;
  */
 class ParkingController extends Controller
 {
+    public function index()
+    {
+        return ParkingResource::collection(Parking::with('vehicle', 'zone')->active()->get());
+    }
+
     public function start(Request $request)
     {
         $parkingData = $request->validate([
@@ -49,5 +55,10 @@ class ParkingController extends Controller
         ]);
     
         return ParkingResource::make($parking);
+    }
+
+    public function stoppedParkings()
+    {
+        return ParkingResource::collection(Parking::with('vehicle', 'zone')->stopped()->get());
     }
 }
